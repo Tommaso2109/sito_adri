@@ -136,14 +136,8 @@ body {
 
 .hero-section {
     padding: var(--spacing-xl) 0;
-}
-
-.section-1 {
-    background-color: var(--color-light);
-}
-
-.section-2 {
     background-color: var(--color-white);
+    transition: var(--transition);
 }
 
 .section-3 {
@@ -830,12 +824,38 @@ body {
     border-radius: 8px;
     border-left: 4px solid var(--color-secondary);
     transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
 }
 
 .pubblicazione-item:hover {
     border-left-color: var(--color-primary);
     box-shadow: 0 5px 15px rgba(44, 95, 124, 0.1);
     transform: translateX(5px);
+}
+
+.pubblicazione-info {
+    flex: 1 1 auto;
+}
+
+.pubblicazione-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .pubblicazione-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pubblicazione-actions {
+        justify-content: flex-start;
+        margin-top: var(--spacing-sm);
+    }
 }
 
 .pubblicazione-title {
@@ -1350,5 +1370,184 @@ body {
     .logo-image {
         width: 60px;
         height: 60px;
+    }
+}
+
+/* Hamburger & Mobile Menu */
+.hamburger {
+    display: none; /* mostrato solo su mobile */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    position: relative; /* permettere z-index */
+    z-index: 3001; /* più alto dell'overlay (2000) e dell'header (1000) */
+}
+
+.hamburger-box {
+    width: 28px;
+    height: 20px;
+    display: inline-block;
+    position: relative;
+}
+
+.hamburger-inner,
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+    width: 28px;
+    height: 3px;
+    background-color: var(--color-white);
+    display: block;
+    border-radius: 2px;
+    position: absolute;
+    transition: transform 0.25s ease, opacity 0.25s ease, background-color 0.25s ease;
+    transform-origin: center;
+}
+
+/* center the middle bar, and position pseudo bars relative to the middle */
+.hamburger-inner { top: 50%; left: 0; transform: translateY(-50%); }
+.hamburger-inner::before { content: ''; top: 50%; left: 0; transform: translateY(-10px); }
+.hamburger-inner::after { content: ''; top: 50%; left: 0; transform: translateY(10px); }
+
+/* Active state: turn into an X */
+.hamburger[aria-expanded="true"] .hamburger-inner {
+    background-color: transparent;
+}
+.hamburger[aria-expanded="true"] .hamburger-inner::before {
+    transform: translateY(0) rotate(45deg);
+}
+.hamburger[aria-expanded="true"] .hamburger-inner::after {
+    transform: translateY(0) rotate(-45deg);
+}
+
+.mobile-menu {
+    /* full-screen container (inset) but inner panel slides from right */
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    pointer-events: none; /* allow clicks only when open */
+}
+
+/* dark overlay using pseudo-element */
+.mobile-menu::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.mobile-menu-inner {
+    position: absolute;
+    /* place the panel at the very top (no space above) */
+    top: 0;
+    right: 0;
+    /* auto height: only use the space needed up to a limit */
+    height: auto;
+    width: calc(100% - 48px);
+    max-width: 360px;
+    max-height: 80vh; /* allow internal scroll if too many links */
+    background: var(--color-primary);
+    transform: translateX(110%); /* start off-canvas to the right */
+    transition: transform 0.35s ease, opacity 0.25s ease;
+    box-shadow: -10px 10px 30px rgba(0,0,0,0.15);
+    padding: 1rem 1.25rem;
+    overflow-y: auto;
+    pointer-events: auto;
+    border-radius: 10px;
+}
+
+.mobile-menu-close {
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--color-white);
+    position: absolute;
+    top: 12px;
+    right: 16px;
+}
+
+.mobile-nav-list {
+    list-style: none;
+    margin-top: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mobile-nav-list a {
+    text-decoration: none;
+    color: var(--color-white);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.mobile-nav-list a:hover {
+    color: var(--color-light);
+}
+
+@media (max-width: 768px) {
+    /* Nascondi i link header e mostra hamburger */
+    .nav-list { display: none; }
+    .hamburger { display: inline-block; color: var(--color-white); }
+
+    /* When the menu is open (aria-hidden="false") reveal overlay and slide panel in */
+    .mobile-menu[aria-hidden="false"] {
+        pointer-events: auto;
+    }
+
+    .mobile-menu[aria-hidden="false"]::before {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .mobile-menu[aria-hidden="false"] .mobile-menu-inner {
+        transform: translateX(0);
+    }
+}
+
+/* Strong mobile overrides to ensure timeline is clean and aligned */
+@media (max-width: 768px) {
+    /* Ensure container padding is used as reference */
+    .timeline {
+        padding-left: var(--spacing-md);
+        max-width: 100%;
+    }
+
+    /* Remove vertical line and decorative dots on mobile */
+    .timeline::before,
+    .timeline-content::before {
+        display: none !important;
+    }
+
+    /* Stack items: date above content, both full width and aligned */
+    .timeline-item {
+        display: block;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .timeline-date,
+    .timeline-content {
+        width: 100%;
+        margin: 0;
+        padding-left: 0;
+        box-sizing: border-box;
+    }
+
+    /* Slight spacing between date and content for readability */
+    .timeline-date {
+        margin-bottom: 0.4rem;
+        font-size: 1.15rem;
+    }
+
+    /* Make sure competence cards aren't shifted on mobile */
+    .competenze-grid {
+        transform: none !important;
+        max-width: 100% !important;
     }
 }

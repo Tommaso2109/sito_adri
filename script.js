@@ -206,3 +206,52 @@ document.addEventListener('DOMContentLoaded', createBackToTop);
 
 // Console log for debugging
 console.log('Website scripts loaded successfully');
+
+// Mobile menu open/close handlers
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerButtons = document.querySelectorAll('.hamburger');
+    const mobileMenus = document.querySelectorAll('#mobile-menu');
+
+    hamburgerButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const menu = document.getElementById(btn.getAttribute('aria-controls')) || document.getElementById('mobile-menu');
+            if (!menu) return;
+            // determine current hidden state and toggle it
+            const isHidden = menu.getAttribute('aria-hidden') === 'true';
+            const newHidden = !isHidden;
+            menu.setAttribute('aria-hidden', String(newHidden));
+            // aria-expanded should reflect visibility (true when menu visible)
+            btn.setAttribute('aria-expanded', String(!newHidden));
+        });
+    });
+
+    mobileMenus.forEach(menu => {
+        // close button
+        const closeBtn = menu.querySelector('.mobile-menu-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                menu.setAttribute('aria-hidden', 'true');
+                const hb = document.querySelector('.hamburger');
+                if (hb) hb.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        // click overlay to close
+        menu.addEventListener('click', (e) => {
+            if (e.target === menu) {
+                menu.setAttribute('aria-hidden', 'true');
+                const hb = document.querySelector('.hamburger');
+                if (hb) hb.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // close when clicking a link inside
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menu.setAttribute('aria-hidden', 'true');
+                const hb = document.querySelector('.hamburger');
+                if (hb) hb.setAttribute('aria-expanded', 'false');
+            });
+        });
+    });
+});
